@@ -23,6 +23,8 @@ export const analyzeText = async (
   
   if (onProgress) onProgress(50);
   
+  const words = text.split(/\s+/).filter(w => w.length > 0);
+
   // Calculate LIX (readability index)
   const lix = calculateLIX(text);
   
@@ -49,7 +51,8 @@ export const analyzeText = async (
       lix: Math.round(lix),
       ovix: Math.round(ovix),
       nk: Math.round(nk)
-    }
+    },
+    wordCount: words.length
   };
 };
 
