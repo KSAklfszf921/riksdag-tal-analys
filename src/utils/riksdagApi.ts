@@ -26,20 +26,6 @@ export interface SearchParams {
   to?: string;
 }
 
-// Use HTTPS to avoid mixed content issues when the app is served over TLS
-const HTTP_BASE = 'https://data.riksdagen.se/anforandelista/';
-const BASE_URL = import.meta.env.DEV ? '/riksdag-api/anforandelista/' : HTTP_BASE;
-
-const buildQuery = (params: SearchParams): string => {
-  const q = new URLSearchParams({ utformat: 'json', doktyp: 'anf' });
-
-  if (params.limit) q.append('sz', params.limit.toString());
-  if (params.year) q.append('rm', params.year);
-  if (params.party) q.append('parti', params.party);
-  if (params.member) q.append('talare', params.member);
-  if (params.search) q.append('sokord', params.search);
-  if (params.from) q.append('from', params.from);
-  if (params.to) q.append('tom', params.to);
 
   return `${BASE_URL}?${q.toString()}`;
 };

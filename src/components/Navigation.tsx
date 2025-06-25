@@ -16,6 +16,7 @@ const Navigation = ({ currentView, setCurrentView }: NavigationProps) => {
     { id: 'compare', label: 'Jämförelser', icon: Users },
     { id: 'methods', label: 'Mätmetoder', icon: BookOpen },
     { id: 'calculator', label: 'Beräkning', icon: Calculator },
+    { id: 'members', label: 'Ledamöter', icon: Users },
   ];
 
   return (

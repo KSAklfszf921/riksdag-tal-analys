@@ -19,6 +19,7 @@ import Methods from '@/components/Methods';
 import Calculator from '@/components/Calculator';
 import ApiIntegration from '@/components/ApiIntegration';
 import Navigation from '@/components/Navigation';
+
 import { Analysis } from '@/types';
 
 const Index = () => {
@@ -64,20 +65,7 @@ const Index = () => {
   }, [analyses]);
 
   const handleAnalysisComplete = (newAnalysis: Analysis) => {
-    setAnalyses(prev => {
-      const exists = prev.some(a => a.id === newAnalysis.id || a.fileName === newAnalysis.fileName);
-      if (exists) {
-        toast({
-          title: "Dublett hoppad",
-          description: `${newAnalysis.fileName} har redan analyserats`,
-        });
-        return prev;
-      }
-      toast({
-        title: "Analys slutförd",
-        description: `${newAnalysis.speaker} (${newAnalysis.party}) har analyserats`,
-      });
-      return [newAnalysis, ...prev];
+
     });
   };
 
@@ -171,6 +159,8 @@ const Index = () => {
         return <Methods />;
       case 'calculator':
         return <Calculator />;
+      case 'members':
+        return <Members />;
       default:
         return null;
     }

@@ -72,8 +72,7 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
     }
 
     setFiles(prev => [...prev, ...selectedFiles]);
-    // Clear the input so the same file can be chosen again
-    e.target.value = "";
+
 
   };
 

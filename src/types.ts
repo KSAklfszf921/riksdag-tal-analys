@@ -13,4 +13,5 @@ export interface Analysis {
   source?: string;
   wordCount?: number;
   content?: string;
+
 }
