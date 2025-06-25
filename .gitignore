@@ -25,3 +25,6 @@ dist-ssr
 
 # Directory for CLI-downloaded speeches
 downloaded_speeches/
+
+# Environment files
+.env
