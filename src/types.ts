@@ -14,3 +14,11 @@ export interface Analysis {
   wordCount?: number;
 
 }
+
+export interface Member {
+  id: string
+  tilltalsnamn: string
+  efternamn: string
+  parti: string
+  bild_url: string
+}

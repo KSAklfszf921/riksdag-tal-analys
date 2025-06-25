@@ -18,6 +18,7 @@ import Methods from '@/components/Methods';
 import Calculator from '@/components/Calculator';
 import ApiIntegration from '@/components/ApiIntegration';
 import Navigation from '@/components/Navigation';
+import Members from '@/components/Members';
 import { Analysis } from '@/types';
 
 const Index = () => {
@@ -158,6 +159,8 @@ const Index = () => {
         return <Methods />;
       case 'calculator':
         return <Calculator />;
+      case 'members':
+        return <Members />;
       default:
         return null;
     }
