@@ -87,10 +87,12 @@ If you want to host the site on your own domain, run:
 npm run build
 ```
 
-The compiled site is written to `public_html/index.html` as a single file with
-all scripts and styles inlined. This repo already includes a copy of that file
-so you can open it directly without running the build. Upload the bundled file
-(and optional `robots.txt`) to your server's `public_html` directory.
+Running the build command first copies `index.template.html` to `index.html`,
+then compiles the site into a single-file bundle. The resulting
+`index.html` contains all scripts and styles inlined, so you can open it
+directly without any server. A copy is also written to `public_html/index.html`
+for convenience. Upload the bundled file (and optional `robots.txt`) to your
+server's `public_html` directory.
 
 ## Can I connect a custom domain to my Lovable project?
 

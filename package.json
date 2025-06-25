@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
+    "dev": "cp index.template.html index.html && vite",
+    "build": "cp index.template.html index.html && vite build && cp public_html/index.html index.html",
+    "build:dev": "cp index.template.html index.html && vite build --mode development && cp public_html/index.html index.html",
     "lint": "eslint .",
     "preview": "vite preview",
     "fetch:speeches": "node scripts/fetchSpeeches.js",
