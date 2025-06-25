@@ -3,9 +3,10 @@ import React from 'react';
 import QuickFetchButton from './QuickFetchButton';
 import AdvancedSearchDialog from './AdvancedSearchDialog';
 import ApiStatus from './ApiStatus';
+import { Analysis } from '@/types';
 
 interface ApiIntegrationProps {
-  onAnalysisComplete: (analysis: any) => void;
+  onAnalysisComplete: (analysis: Analysis) => void;
 }
 
 const ApiIntegration = ({ onAnalysisComplete }: ApiIntegrationProps) => {

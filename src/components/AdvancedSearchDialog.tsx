@@ -9,9 +9,10 @@ import { Search, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { searchSpeeches, ApiSearchParams } from '@/utils/riksdagApi';
 import { analyzeText } from '@/utils/textAnalyzer';
+import { Analysis } from '@/types';
 
 interface AdvancedSearchDialogProps {
-  onAnalysisComplete: (analysis: any) => void;
+  onAnalysisComplete: (analysis: Analysis) => void;
 }
 
 const AdvancedSearchDialog = ({ onAnalysisComplete }: AdvancedSearchDialogProps) => {

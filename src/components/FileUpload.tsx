@@ -7,9 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Upload, FileText, X, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeText } from '@/utils/textAnalyzer';
+import { Analysis } from '@/types';
 
 interface FileUploadProps {
-  onAnalysisComplete: (analysis: any) => void;
+  onAnalysisComplete: (analysis: Analysis) => void;
   setIsProcessing: (processing: boolean) => void;
   setProgress: (progress: number) => void;
 }
