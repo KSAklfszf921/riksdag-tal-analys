@@ -5,10 +5,10 @@ This project fetches speeches from the Riksdagens open data API. Below is a shor
 ## Base URL
 
 ```
-http://data.riksdagen.se/anforandelista/
+https://data.riksdagen.se/anforandelista/
 ```
 
-In production we use the HTTPS variant to avoid CORS issues. During development a Vite proxy forwards requests to this origin.
+During development a Vite proxy forwards requests to this origin to avoid CORS issues. In production the same HTTPS endpoint is used directly.
 
 ## Common Parameters
 
@@ -30,12 +30,12 @@ In production we use the HTTPS variant to avoid CORS issues. During development 
 Fetch the latest 20 speeches in JSON format:
 
 ```
-http://data.riksdagen.se/anforandelista/?sz=20&utformat=json
+https://data.riksdagen.se/anforandelista/?sz=20&utformat=json
 ```
 
 The response contains an `anforandelista` object with an array of `anforande` items. Each item includes fields such as `anforande_id`, `talare`, `parti`, `dok_datum`, `anforande_text` and `rm`.
 
-Refer to [Riksdagens dokumentation](http://data.riksdagen.se/dokumentation/) for full details about available endpoints and parameters.
+Refer to [Riksdagens dokumentation](https://data.riksdagen.se/dokumentation/) for full details about available endpoints and parameters.
 
 ## CLI tool
 
