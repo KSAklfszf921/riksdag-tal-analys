@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,17 +19,25 @@ const AnalysisResults = ({ analyses }: AnalysisResultsProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const averageTotal = Math.round(
-    analyses.reduce((sum, a) => sum + a.totalScore, 0) / (analyses.length || 1)
+  const averageTotal = useMemo(() =>
+    Math.round(
+      analyses.reduce((sum, a) => sum + a.totalScore, 0) / (analyses.length || 1)
+    ), [analyses]
   );
-  const averageLix = Math.round(
-    analyses.reduce((sum, a) => sum + (a.scores?.lix || 0), 0) / (analyses.length || 1)
+  const averageLix = useMemo(() =>
+    Math.round(
+      analyses.reduce((sum, a) => sum + (a.scores?.lix || 0), 0) / (analyses.length || 1)
+    ), [analyses]
   );
-  const averageOvix = Math.round(
-    analyses.reduce((sum, a) => sum + (a.scores?.ovix || 0), 0) / (analyses.length || 1)
+  const averageOvix = useMemo(() =>
+    Math.round(
+      analyses.reduce((sum, a) => sum + (a.scores?.ovix || 0), 0) / (analyses.length || 1)
+    ), [analyses]
   );
-  const averageNk = Math.round(
-    analyses.reduce((sum, a) => sum + (a.scores?.nk || 0), 0) / (analyses.length || 1)
+  const averageNk = useMemo(() =>
+    Math.round(
+      analyses.reduce((sum, a) => sum + (a.scores?.nk || 0), 0) / (analyses.length || 1)
+    ), [analyses]
   );
 
   const getScoreColor = (score: number) => {
