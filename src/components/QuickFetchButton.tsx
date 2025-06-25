@@ -5,9 +5,10 @@ import { Download, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { fetchLatestSpeeches } from '@/utils/riksdagApi';
 import { analyzeText } from '@/utils/textAnalyzer';
+import { Analysis } from '@/types';
 
 interface QuickFetchButtonProps {
-  onAnalysisComplete: (analysis: any) => void;
+  onAnalysisComplete: (analysis: Analysis) => void;
 }
 
 const QuickFetchButton = ({ onAnalysisComplete }: QuickFetchButtonProps) => {
