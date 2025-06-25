@@ -8,6 +8,14 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      // Proxy Riksdag API requests during development to avoid CORS issues
+      "/riksdag-api": {
+        target: "https://data.riksdagen.se",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/riksdag-api/, ""),
+      },
+    },
   },
   plugins: [
     react(),

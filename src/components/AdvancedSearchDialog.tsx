@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { searchSpeeches, ApiSearchParams } from '@/utils/riksdagApi';
 import { analyzeText } from '@/utils/textAnalyzer';
@@ -172,11 +172,16 @@ const AdvancedSearchDialog = ({ onAnalysisComplete }: AdvancedSearchDialogProps)
             />
           </div>
 
-          <Button 
+          <Button
             onClick={handleAdvancedSearch}
             disabled={isLoading}
             className="w-full"
           >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Search className="h-4 w-4 mr-2" />
+            )}
             {isLoading ? 'Söker...' : 'Sök och analysera'}
           </Button>
         </div>
