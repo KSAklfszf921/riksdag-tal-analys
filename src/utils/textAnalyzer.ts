@@ -1,34 +1,30 @@
 
-export interface AnalysisResult {
-  id: string;
-  fileName: string;
-  speaker: string;
-  party: string;
-  date: Date;
-  totalScore: number;
-  scores: {
-    lix: number;
-    ovix: number;
-    nk: number;
-  };
-  source?: string;
-}
+import { Analysis } from '@/types';
 
 export const analyzeText = async (
-  text: string, 
-  fileName: string, 
+  text: string,
+  fileName: string,
   onProgress?: (progress: number) => void
-): Promise<AnalysisResult> => {
+): Promise<Analysis> => {
   // Simulate analysis progress
   if (onProgress) onProgress(25);
-  
-  // Extract speaker and party from filename or text
-  const speakerMatch = fileName.match(/^([^_]+)_([^_]+)/);
-  const speaker = speakerMatch ? `${speakerMatch[1]} ${speakerMatch[2]}` : 'Okänd talare';
-  const party = extractPartyFromText(text) || 'Okänt parti';
+
+  // Extract speaker and party from the speech text. Fallback to filename if not found.
+  const headerInfo = extractSpeakerAndParty(text);
+  let speaker = headerInfo?.speaker;
+  let party = headerInfo?.party;
+  if (!speaker) {
+    const speakerMatch = fileName.match(/^([^_]+)_([^_]+)/);
+    speaker = speakerMatch ? `${speakerMatch[1]} ${speakerMatch[2]}` : 'Okänd talare';
+  }
+  if (!party) {
+    party = extractPartyFromText(text) || 'Okänt parti';
+  }
   
   if (onProgress) onProgress(50);
   
+  const words = text.split(/\s+/).filter(w => w.length > 0);
+
   // Calculate LIX (readability index)
   const lix = calculateLIX(text);
   
@@ -43,7 +39,7 @@ export const analyzeText = async (
   if (onProgress) onProgress(100);
   
   const totalScore = Math.round((lix + ovix + nk) / 3);
-  
+
   return {
     id: `analysis-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     fileName,
@@ -55,7 +51,9 @@ export const analyzeText = async (
       lix: Math.round(lix),
       ovix: Math.round(ovix),
       nk: Math.round(nk)
-    }
+    },
+    wordCount: words.length,
+    content: text
   };
 };
 
@@ -103,3 +101,25 @@ const extractPartyFromText = (text: string): string | null => {
   const match = text.match(partyPattern);
   return match ? match[1].toUpperCase() : null;
 };
+
+interface HeaderInfo {
+  speaker: string | null;
+  party: string | null;
+}
+
+// Extract speaker and party from the beginning of a speech text.
+const extractSpeakerAndParty = (text: string): HeaderInfo | null => {
+  const firstLine = text.trimStart().split(/\n/)[0];
+  const match = firstLine.match(/Anf\.\s*\d+\s+([^()]+?)(?:\s+\(([^)]+)\))?$/i);
+  if (match) {
+    const speakerRaw = match[1].trim();
+    const speaker = speakerRaw
+      .replace(/^(statsrådet|minister|talmanen|herr|fru)\s+/i, '')
+      .replace(/\s+$/,'');
+    const party = match[2] ? match[2].trim().toUpperCase() : null;
+    return { speaker, party };
+  }
+  return null;
+};
+
+export {};

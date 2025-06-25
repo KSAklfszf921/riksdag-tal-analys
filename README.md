@@ -60,6 +60,23 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Features
+
+- Ladda upp talfiler i .txt-format och analysera språket
+- Hämta och analysera anföranden direkt från Riksdagens API
+- Se topplistor och roliga listor med klickbara anföranden
+- Jämför ledamöter eller partier i interaktiva diagram
+- Sök efter specifika ord i analyserade anföranden
+- Paginerad tabell med detaljerade analyser och snittvärden
+
+## Usage
+
+```sh
+npm install
+npm run dev      # utvecklingsserver
+npm run build    # skapa produktionversion i dist/
+```
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/368f9267-e833-40e4-aebe-69add7a06898) and click on Share -> Publish.
