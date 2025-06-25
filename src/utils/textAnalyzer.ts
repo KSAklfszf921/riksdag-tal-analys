@@ -52,8 +52,7 @@ export const analyzeText = async (
       ovix: Math.round(ovix),
       nk: Math.round(nk)
     },
-    wordCount: words.length,
-    content: text
+
   };
 };
 

@@ -1,11 +1,24 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
+
+  const averageTotal = Math.round(
+    analyses.reduce((sum, a) => sum + a.totalScore, 0) / (analyses.length || 1)
+  );
+  const averageLix = Math.round(
+    analyses.reduce((sum, a) => sum + (a.scores?.lix || 0), 0) / (analyses.length || 1)
+  );
+  const averageOvix = Math.round(
+    analyses.reduce((sum, a) => sum + (a.scores?.ovix || 0), 0) / (analyses.length || 1)
+  );
+  const averageNk = Math.round(
+    analyses.reduce((sum, a) => sum + (a.scores?.nk || 0), 0) / (analyses.length || 1)
+  );
 
 import { Analysis } from '@/types';
 
@@ -18,6 +31,27 @@ const AnalysisResults = ({ analyses }: AnalysisResultsProps) => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const averageTotal = useMemo(() =>
+    Math.round(
+      analyses.reduce((sum, a) => sum + a.totalScore, 0) / (analyses.length || 1)
+    ), [analyses]
+  );
+  const averageLix = useMemo(() =>
+    Math.round(
+      analyses.reduce((sum, a) => sum + (a.scores?.lix || 0), 0) / (analyses.length || 1)
+    ), [analyses]
+  );
+  const averageOvix = useMemo(() =>
+    Math.round(
+      analyses.reduce((sum, a) => sum + (a.scores?.ovix || 0), 0) / (analyses.length || 1)
+    ), [analyses]
+  );
+  const averageNk = useMemo(() =>
+    Math.round(
+      analyses.reduce((sum, a) => sum + (a.scores?.nk || 0), 0) / (analyses.length || 1)
+    ), [analyses]
+  );
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-600 bg-green-50';
@@ -213,6 +247,25 @@ const AnalysisResults = ({ analyses }: AnalysisResultsProps) => {
                                   {selectedAnalysis.party || 'N/A'}
                                 </Badge>
                                 <div className="text-sm text-gray-500 mt-1">Parti</div>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                              <div className="text-center p-4 border rounded">
+                                <div className="text-lg font-semibold">{averageTotal}</div>
+                                <div className="text-sm text-gray-500">Snitt totalpoäng</div>
+                              </div>
+                              <div className="text-center p-4 border rounded">
+                                <div className="text-lg font-semibold">{averageLix}</div>
+                                <div className="text-sm text-gray-500">Snitt LIX</div>
+                              </div>
+                              <div className="text-center p-4 border rounded">
+                                <div className="text-lg font-semibold">{averageOvix}</div>
+                                <div className="text-sm text-gray-500">Snitt OVIX</div>
+                              </div>
+                              <div className="text-center p-4 border rounded">
+                                <div className="text-lg font-semibold">{averageNk}</div>
+                                <div className="text-sm text-gray-500">Snitt NK</div>
                               </div>
                             </div>
 
