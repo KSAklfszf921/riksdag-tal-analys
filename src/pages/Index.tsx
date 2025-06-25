@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,7 +31,13 @@ const Index = () => {
     const savedAnalyses = localStorage.getItem('riksdag-analyses');
     if (savedAnalyses) {
       try {
-        setAnalyses(JSON.parse(savedAnalyses));
+        const parsedAnalyses = JSON.parse(savedAnalyses);
+        // Convert date strings back to Date objects
+        const analysesWithDates = parsedAnalyses.map(analysis => ({
+          ...analysis,
+          date: new Date(analysis.date)
+        }));
+        setAnalyses(analysesWithDates);
       } catch (error) {
         console.error('Error loading saved analyses:', error);
       }
