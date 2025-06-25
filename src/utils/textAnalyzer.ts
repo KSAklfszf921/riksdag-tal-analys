@@ -1,24 +1,11 @@
 
-export interface AnalysisResult {
-  id: string;
-  fileName: string;
-  speaker: string;
-  party: string;
-  date: Date;
-  totalScore: number;
-  scores: {
-    lix: number;
-    ovix: number;
-    nk: number;
-  };
-  source?: string;
-}
+import { Analysis } from '@/types';
 
 export const analyzeText = async (
   text: string, 
   fileName: string, 
   onProgress?: (progress: number) => void
-): Promise<AnalysisResult> => {
+): Promise<Analysis> => {
   // Simulate analysis progress
   if (onProgress) onProgress(25);
   
