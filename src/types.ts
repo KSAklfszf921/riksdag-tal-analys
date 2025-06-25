@@ -12,5 +12,14 @@ export interface Analysis {
   };
   source?: string;
   wordCount?: number;
+  content?: string;
 
+}
+
+export interface Member {
+  id: string
+  tilltalsnamn: string
+  efternamn: string
+  parti: string
+  bild_url: string
 }

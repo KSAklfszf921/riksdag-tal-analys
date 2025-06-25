@@ -10,6 +10,9 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+public_html/*
+!public_html/index.html
+!public_html/robots.txt
 *.local
 
 # Editor directories and files
@@ -25,3 +28,6 @@ dist-ssr
 
 # Directory for CLI-downloaded speeches
 downloaded_speeches/
+
+# Environment files
+.env

@@ -60,9 +60,37 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Supabase integration
+
+This project fetches data about members of parliament from the official
+Riksdagen API and stores it in a Supabase table. To run the sync script,
+create a `.env` file based on `.env.example` and provide your Supabase URL
+and keys:
+
+```sh
+cp .env.example .env
+# edit .env and add your credentials
+
+# Sync member data
+npm run fetch:members
+```
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/368f9267-e833-40e4-aebe-69add7a06898) and click on Share -> Publish.
+
+### Building locally for upload
+
+If you want to host the site on your own domain, run:
+
+```sh
+npm run build
+```
+
+The compiled site is written to `public_html/index.html` as a single file with
+all scripts and styles inlined. This repo already includes a copy of that file
+so you can open it directly without running the build. Upload the bundled file
+(and optional `robots.txt`) to your server's `public_html` directory.
 
 ## Can I connect a custom domain to my Lovable project?
 
