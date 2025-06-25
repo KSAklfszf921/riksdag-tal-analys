@@ -37,3 +37,9 @@ The response contains an `anforandelista` object with an array of `anforande` it
 
 Refer to [Riksdagens dokumentation](http://data.riksdagen.se/dokumentation/) for full details about available endpoints and parameters.
 
+## CLI tool
+
+Run `npm run fetch:speeches` to download speeches from the command line. You can pass optional parameters such as `--year 2024/25` or `--party S`.
+
+The speeches are saved as `.txt` files under `downloaded_speeches/`.
+
