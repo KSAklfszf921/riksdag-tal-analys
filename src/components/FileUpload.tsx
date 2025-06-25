@@ -43,6 +43,7 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
       const droppedFiles = Array.from(e.dataTransfer.files).filter(isTextFile);
 
       if (droppedFiles.length > 0) {
+        setFiles(prev => [...prev, ...droppedFiles]);
 
         toast({
           title: "Filer tillagda",
@@ -69,6 +70,8 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
       });
       return;
     }
+
+    setFiles(prev => [...prev, ...selectedFiles]);
 
   };
 
