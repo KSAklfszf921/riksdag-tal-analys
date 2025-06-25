@@ -39,7 +39,7 @@ export const analyzeText = async (
   if (onProgress) onProgress(100);
   
   const totalScore = Math.round((lix + ovix + nk) / 3);
-  
+
   return {
     id: `analysis-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     fileName,
@@ -52,7 +52,7 @@ export const analyzeText = async (
       ovix: Math.round(ovix),
       nk: Math.round(nk)
     },
-    wordCount: words.length
+
   };
 };
 
@@ -108,13 +108,13 @@ interface HeaderInfo {
 
 // Extract speaker and party from the beginning of a speech text.
 const extractSpeakerAndParty = (text: string): HeaderInfo | null => {
-  const headerMatch = text
-    .trimStart()
-    .match(/Anf\.\s*\d+\s+([^\n(]+?)\s*\(([^)]+)\)/i);
-  if (headerMatch) {
+  const firstLine = text.trim().split(/\n/)[0] || "";
+  // Example header: "Fru Talman (S)" or "Herr Talman (M)"
+  const match = firstLine.match(/^(?<speaker>[^()]+)\((?<party>[^)]+)\)/);
+  if (match && match.groups) {
     return {
-      speaker: headerMatch[1].trim(),
-      party: headerMatch[2].trim().toUpperCase(),
+      speaker: match.groups.speaker.trim(),
+      party: match.groups.party.trim().toUpperCase(),
     };
   }
   return null;

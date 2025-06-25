@@ -14,10 +14,12 @@ import { useToast } from '@/hooks/use-toast';
 import FileUpload from '@/components/FileUpload';
 import AnalysisResults from '@/components/AnalysisResults';
 import TopLists from '@/components/TopLists';
+import ComparisonTools from '@/components/ComparisonTools';
 import Methods from '@/components/Methods';
 import Calculator from '@/components/Calculator';
 import ApiIntegration from '@/components/ApiIntegration';
 import Navigation from '@/components/Navigation';
+import Members from '@/components/Members';
 import { Analysis } from '@/types';
 
 const Index = () => {
@@ -62,11 +64,7 @@ const Index = () => {
     }
   }, [analyses]);
 
-  const handleAnalysisComplete = (newAnalysis: Analysis) => {
-    setAnalyses(prev => [newAnalysis, ...prev]);
-    toast({
-      title: "Analys slutförd",
-      description: `${newAnalysis.speaker} (${newAnalysis.party}) har analyserats`,
+
     });
   };
 
@@ -149,15 +147,19 @@ const Index = () => {
             )}
 
             {/* Recent Analyses */}
-            <AnalysisResults analyses={analyses.slice(0, 10)} />
+            <AnalysisResults analyses={analyses} />
           </div>
         );
       case 'toplists':
         return <TopLists analyses={analyses} />;
+      case 'compare':
+        return <ComparisonTools analyses={analyses} />;
       case 'methods':
         return <Methods />;
       case 'calculator':
         return <Calculator />;
+      case 'members':
+        return <Members />;
       default:
         return null;
     }
