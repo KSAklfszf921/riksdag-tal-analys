@@ -64,7 +64,11 @@ const Index = () => {
     }
   }, [analyses]);
 
-
+  const handleAnalysisComplete = (newAnalysis: Analysis) => {
+    setAnalyses(prev => [newAnalysis, ...prev]);
+    toast({
+      title: "Analys slutförd",
+      description: `${newAnalysis.speaker} (${newAnalysis.party}) har analyserats`,
     });
   };
 
