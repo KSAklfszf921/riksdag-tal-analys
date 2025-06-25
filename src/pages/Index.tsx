@@ -19,7 +19,7 @@ import Methods from '@/components/Methods';
 import Calculator from '@/components/Calculator';
 import ApiIntegration from '@/components/ApiIntegration';
 import Navigation from '@/components/Navigation';
-import Members from '@/components/Members';
+
 import { Analysis } from '@/types';
 
 const Index = () => {
@@ -65,10 +65,7 @@ const Index = () => {
   }, [analyses]);
 
   const handleAnalysisComplete = (newAnalysis: Analysis) => {
-    setAnalyses(prev => [newAnalysis, ...prev]);
-    toast({
-      title: "Analys slutförd",
-      description: `${newAnalysis.speaker} (${newAnalysis.party}) har analyserats`,
+
     });
   };
 

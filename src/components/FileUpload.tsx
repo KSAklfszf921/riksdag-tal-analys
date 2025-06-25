@@ -73,6 +73,7 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
 
     setFiles(prev => [...prev, ...selectedFiles]);
 
+
   };
 
   const removeFile = (index: number) => {

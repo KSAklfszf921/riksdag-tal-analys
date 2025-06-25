@@ -15,11 +15,3 @@ export interface Analysis {
   content?: string;
 
 }
-
-export interface Member {
-  id: string
-  tilltalsnamn: string
-  efternamn: string
-  parti: string
-  bild_url: string
-}

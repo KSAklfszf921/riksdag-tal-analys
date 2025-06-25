@@ -7,19 +7,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
 
-  const averageTotal = Math.round(
-    analyses.reduce((sum, a) => sum + a.totalScore, 0) / (analyses.length || 1)
-  );
-  const averageLix = Math.round(
-    analyses.reduce((sum, a) => sum + (a.scores?.lix || 0), 0) / (analyses.length || 1)
-  );
-  const averageOvix = Math.round(
-    analyses.reduce((sum, a) => sum + (a.scores?.ovix || 0), 0) / (analyses.length || 1)
-  );
-  const averageNk = Math.round(
-    analyses.reduce((sum, a) => sum + (a.scores?.nk || 0), 0) / (analyses.length || 1)
-  );
-
 import { Analysis } from '@/types';
 
 interface AnalysisResultsProps {
