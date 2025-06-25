@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { fetchLatestSpeeches } from '@/utils/riksdagApi';
 import { analyzeText } from '@/utils/textAnalyzer';
@@ -73,7 +73,11 @@ const QuickFetchButton = ({ onAnalysisComplete }: QuickFetchButtonProps) => {
       disabled={isLoading}
       className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
     >
-      <Download className="h-4 w-4 mr-2" />
+      {isLoading ? (
+        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+      ) : (
+        <Download className="h-4 w-4 mr-2" />
+      )}
       {isLoading ? 'Hämtar...' : 'Hämta senaste 10'}
     </Button>
   );

@@ -25,29 +25,39 @@ const Index = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
+  const STORAGE_KEY = 'riksdag-analyses-v1';
+  const LEGACY_KEY = 'riksdag-analyses';
 
   // Load saved analyses on component mount
   useEffect(() => {
-    const savedAnalyses = localStorage.getItem('riksdag-analyses');
-    if (savedAnalyses) {
-      try {
-        const parsedAnalyses = JSON.parse(savedAnalyses);
-        // Convert date strings back to Date objects
-        const analysesWithDates = parsedAnalyses.map(analysis => ({
-          ...analysis,
-          date: new Date(analysis.date)
-        }));
-        setAnalyses(analysesWithDates);
-      } catch (error) {
-        console.error('Error loading saved analyses:', error);
+    const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_KEY);
+    if (!stored) return;
+
+    try {
+      const parsed = JSON.parse(stored);
+      // Convert date strings back to Date objects
+      const analysesWithDates = parsed.map((analysis: any) => ({
+        ...analysis,
+        date: new Date(analysis.date),
+      }));
+      setAnalyses(analysesWithDates);
+      // Migrate legacy key if needed
+      if (localStorage.getItem(LEGACY_KEY)) {
+        localStorage.removeItem(LEGACY_KEY);
+        localStorage.setItem(STORAGE_KEY, stored);
       }
+    } catch (error) {
+      console.error('Error loading saved analyses:', error);
+      localStorage.removeItem(STORAGE_KEY);
     }
   }, []);
 
   // Save analyses to localStorage whenever analyses change
   useEffect(() => {
     if (analyses.length > 0) {
-      localStorage.setItem('riksdag-analyses', JSON.stringify(analyses));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(analyses));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
     }
   }, [analyses]);
 

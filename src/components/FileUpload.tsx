@@ -29,33 +29,45 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
     }
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
+  const isTextFile = (file: File) =>
+    file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt");
 
-    const droppedFiles = Array.from(e.dataTransfer.files).filter(
-      file => file.type === "text/plain" || file.name.endsWith('.txt')
-    );
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragActive(false);
 
-    if (droppedFiles.length > 0) {
-      setFiles(prev => [...prev, ...droppedFiles]);
-      toast({
-        title: "Filer tillagda",
-        description: `${droppedFiles.length} fil(er) redo för analys`,
-      });
-    } else {
+      const droppedFiles = Array.from(e.dataTransfer.files).filter(isTextFile);
+
+      if (droppedFiles.length > 0) {
+        setFiles((prev) => [...prev, ...droppedFiles]);
+        toast({
+          title: "Filer tillagda",
+          description: `${droppedFiles.length} fil(er) redo för analys`,
+        });
+      } else {
+        toast({
+          title: "Ogiltigt filformat",
+          description: "Endast .txt-filer accepteras",
+          variant: "destructive",
+        });
+      }
+    },
+    [toast]
+  );
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []).filter(isTextFile);
+    if (selectedFiles.length === 0) {
       toast({
         title: "Ogiltigt filformat",
         description: "Endast .txt-filer accepteras",
         variant: "destructive",
       });
+      return;
     }
-  }, [toast]);
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    setFiles(prev => [...prev, ...selectedFiles]);
+    setFiles((prev) => [...prev, ...selectedFiles]);
   };
 
   const removeFile = (index: number) => {
@@ -71,18 +83,28 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const text = await file.text();
-        
-        setProgress(((i + 0.5) / files.length) * 100);
-        
-        const analysis = await analyzeText(text, file.name, (methodProgress) => {
-          const totalProgress = ((i + methodProgress / 100) / files.length) * 100;
-          setProgress(totalProgress);
-        });
-        
-        onAnalysisComplete(analysis);
-        
-        setProgress(((i + 1) / files.length) * 100);
+
+        try {
+          const text = await file.text();
+
+          setProgress(((i + 0.5) / files.length) * 100);
+
+          const analysis = await analyzeText(text, file.name, (methodProgress) => {
+            const totalProgress = ((i + methodProgress / 100) / files.length) * 100;
+            setProgress(totalProgress);
+          });
+
+          onAnalysisComplete(analysis);
+
+          setProgress(((i + 1) / files.length) * 100);
+        } catch (fileError) {
+          console.error('File processing error:', fileError);
+          toast({
+            title: 'Fel vid fil',
+            description: `${file.name} kunde inte analyseras`,
+            variant: 'destructive',
+          });
+        }
       }
 
       setFiles([]);

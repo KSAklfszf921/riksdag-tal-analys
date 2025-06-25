@@ -28,7 +28,11 @@ export interface ApiSearchParams {
   tom?: string;
 }
 
-const BASE_URL = 'http://data.riksdagen.se/anforandelista/';
+// Use a relative URL in development so we can proxy API requests to avoid CORS
+// issues. In production we call the HTTPS endpoint directly.
+const BASE_URL = import.meta.env.DEV
+  ? '/riksdag-api/anforandelista/'
+  : 'https://data.riksdagen.se/anforandelista/';
 
 export const fetchRiksdagSpeeches = async (params: ApiSearchParams = {}): Promise<RiksdagAnforande[]> => {
   const queryParams = new URLSearchParams();
