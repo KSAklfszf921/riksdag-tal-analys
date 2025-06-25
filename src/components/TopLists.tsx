@@ -6,15 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Crown, TrendingUp, TrendingDown, Search, Filter, User, BarChart3 } from 'lucide-react';
+import { Analysis } from '@/types';
 
 interface TopListsProps {
-  analyses: any[];
+  analyses: Analysis[];
 }
 
 const TopLists = ({ analyses }: TopListsProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedParty, setSelectedParty] = useState('all');
+  const [searchWord, setSearchWord] = useState('');
+  const [wordResults, setWordResults] = useState<{ analysis: Analysis; count: number }[]>([]);
 
   const getPartyColor = (party: string) => {
     const colors = {
@@ -57,7 +61,7 @@ const TopLists = ({ analyses }: TopListsProps) => {
     return acc;
   }, {});
 
-  const partyStats = Object.entries(partyAverages).map(([party, data]: [string, any]) => ({
+  const partyStats = Object.entries(partyAverages).map(([party, data]: [string, { total: number; count: number; scores: number[] }]) => ({
     party,
     average: Math.round(data.total / data.count),
     count: data.count,
@@ -68,8 +72,8 @@ const TopLists = ({ analyses }: TopListsProps) => {
   const uniqueParties = [...new Set(analyses.map(a => a.party).filter(Boolean))];
 
   const funStats = {
-    longestSpeech: analyses.reduce((max, curr) => 
-      (curr.wordCount || 0) > (max.wordCount || 0) ? curr : max, 
+    longestSpeech: analyses.reduce((max, curr) =>
+      (curr.wordCount || 0) > (max.wordCount || 0) ? curr : max,
       analyses[0] || {}
     ),
     shortestSpeech: analyses.reduce((min, curr) => 
@@ -80,10 +84,26 @@ const TopLists = ({ analyses }: TopListsProps) => {
       (curr.scores?.lix || 0) > (max.scores?.lix || 0) ? curr : max, 
       analyses[0] || {}
     ),
-    mostVaried: analyses.reduce((max, curr) => 
-      (curr.scores?.ovix || 0) > (max.scores?.ovix || 0) ? curr : max, 
+    mostVaried: analyses.reduce((max, curr) =>
+      (curr.scores?.ovix || 0) > (max.scores?.ovix || 0) ? curr : max,
       analyses[0] || {}
     )
+  };
+
+  const handleWordSearch = () => {
+    const word = searchWord.trim().toLowerCase();
+    if (!word) {
+      setWordResults([]);
+      return;
+    }
+    const results = analyses
+      .map(a => ({
+        analysis: a,
+        count: (a.content || '').toLowerCase().split(word).length - 1
+      }))
+      .filter(r => r.count > 0)
+      .sort((a, b) => b.count - a.count);
+    setWordResults(results);
   };
 
   if (analyses.length === 0) {
@@ -160,25 +180,39 @@ const TopLists = ({ analyses }: TopListsProps) => {
               <CardContent>
                 <div className="space-y-3">
                   {topScorers.map((analysis, index) => (
-                    <div key={analysis.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold">
-                          {index + 1}
-                        </div>
-                        <div>
-                          <div className="font-medium">{analysis.speaker || 'Okänd'}</div>
-                          <div className="text-sm text-gray-500">{analysis.fileName}</div>
-                        </div>
-                        {analysis.party && (
-                          <Badge className={`${getPartyColor(analysis.party)} text-white`}>
-                            {analysis.party}
+                    <Dialog key={analysis.id}>
+                      <DialogTrigger asChild>
+                        <div
+                          className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold">
+                              {index + 1}
+                            </div>
+                            <div>
+                              <div className="font-medium">{analysis.speaker || 'Okänd'}</div>
+                              <div className="text-sm text-gray-500">{analysis.fileName}</div>
+                            </div>
+                            {analysis.party && (
+                              <Badge className={`${getPartyColor(analysis.party)} text-white`}>
+                                {analysis.party}
+                              </Badge>
+                            )}
+                          </div>
+                          <Badge className="bg-green-100 text-green-800 text-lg font-bold">
+                            {analysis.totalScore}
                           </Badge>
-                        )}
-                      </div>
-                      <Badge className="bg-green-100 text-green-800 text-lg font-bold">
-                        {analysis.totalScore}
-                      </Badge>
-                    </div>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>{analysis.speaker}</DialogTitle>
+                        </DialogHeader>
+                        <pre className="whitespace-pre-wrap text-sm">
+                          {analysis.content}
+                        </pre>
+                      </DialogContent>
+                    </Dialog>
                   ))}
                 </div>
               </CardContent>
@@ -194,25 +228,39 @@ const TopLists = ({ analyses }: TopListsProps) => {
               <CardContent>
                 <div className="space-y-3">
                   {bottomScorers.map((analysis, index) => (
-                    <div key={analysis.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gray-500 text-white rounded-full flex items-center justify-center font-bold">
-                          {index + 1}
-                        </div>
-                        <div>
-                          <div className="font-medium">{analysis.speaker || 'Okänd'}</div>
-                          <div className="text-sm text-gray-500">{analysis.fileName}</div>
-                        </div>
-                        {analysis.party && (
-                          <Badge className={`${getPartyColor(analysis.party)} text-white`}>
-                            {analysis.party}
+                    <Dialog key={analysis.id}>
+                      <DialogTrigger asChild>
+                        <div
+                          className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-gray-500 text-white rounded-full flex items-center justify-center font-bold">
+                              {index + 1}
+                            </div>
+                            <div>
+                              <div className="font-medium">{analysis.speaker || 'Okänd'}</div>
+                              <div className="text-sm text-gray-500">{analysis.fileName}</div>
+                            </div>
+                            {analysis.party && (
+                              <Badge className={`${getPartyColor(analysis.party)} text-white`}>
+                                {analysis.party}
+                              </Badge>
+                            )}
+                          </div>
+                          <Badge className="bg-red-100 text-red-800 text-lg font-bold">
+                            {analysis.totalScore}
                           </Badge>
-                        )}
-                      </div>
-                      <Badge className="bg-red-100 text-red-800 text-lg font-bold">
-                        {analysis.totalScore}
-                      </Badge>
-                    </div>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>{analysis.speaker}</DialogTitle>
+                        </DialogHeader>
+                        <pre className="whitespace-pre-wrap text-sm">
+                          {analysis.content}
+                        </pre>
+                      </DialogContent>
+                    </Dialog>
                   ))}
                 </div>
               </CardContent>
@@ -231,25 +279,42 @@ const TopLists = ({ analyses }: TopListsProps) => {
             <CardContent>
               <div className="space-y-4">
                 {partyStats.map((party, index) => (
-                  <div key={party.party} className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
-                        {index + 1}
+                  <Dialog key={party.party}>
+                    <DialogTrigger asChild>
+                      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg cursor-pointer">
+                        <div className="flex items-center gap-4">
+                          <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
+                            {index + 1}
+                          </div>
+                          <Badge className={`${getPartyColor(party.party)} text-white text-lg px-4 py-2`}>
+                            {party.party}
+                          </Badge>
+                          <div className="text-sm text-gray-600">
+                            {party.count} anföranden
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-blue-600">{party.average}</div>
+                          <div className="text-xs text-gray-500">
+                            {party.lowest} - {party.highest}
+                          </div>
+                        </div>
                       </div>
-                      <Badge className={`${getPartyColor(party.party)} text-white text-lg px-4 py-2`}>
-                        {party.party}
-                      </Badge>
-                      <div className="text-sm text-gray-600">
-                        {party.count} anföranden
+                    </DialogTrigger>
+                    <DialogContent className="max-w-xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Resultat för {party.party}</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-2">
+                        {analyses.filter(a => a.party === party.party).map(a => (
+                          <div key={a.id} className="flex justify-between border-b pb-1">
+                            <span>{a.speaker || a.fileName}</span>
+                            <Badge>{a.totalScore}</Badge>
+                          </div>
+                        ))}
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-blue-600">{party.average}</div>
-                      <div className="text-xs text-gray-500">
-                        {party.lowest} - {party.highest}
-                      </div>
-                    </div>
-                  </div>
+                    </DialogContent>
+                  </Dialog>
                 ))}
               </div>
             </CardContent>
@@ -258,89 +323,137 @@ const TopLists = ({ analyses }: TopListsProps) => {
 
         <TabsContent value="fun" className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>📏 Längsta anförandet</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center space-y-2">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {funStats.longestSpeech?.speaker || 'N/A'}
-                  </div>
-                  {funStats.longestSpeech?.party && (
-                    <Badge className={`${getPartyColor(funStats.longestSpeech.party)} text-white`}>
-                      {funStats.longestSpeech.party}
-                    </Badge>
-                  )}
-                  <div className="text-sm text-gray-600">
-                    {funStats.longestSpeech?.wordCount || 0} ord
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer">
+                  <CardHeader>
+                    <CardTitle>📏 Längsta anförandet</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-purple-600">
+                        {funStats.longestSpeech?.speaker || 'N/A'}
+                      </div>
+                      {funStats.longestSpeech?.party && (
+                        <Badge className={`${getPartyColor(funStats.longestSpeech.party)} text-white`}>
+                          {funStats.longestSpeech.party}
+                        </Badge>
+                      )}
+                      <div className="text-sm text-gray-600">
+                        {funStats.longestSpeech?.wordCount || 0} ord
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{funStats.longestSpeech?.speaker}</DialogTitle>
+                </DialogHeader>
+                <pre className="whitespace-pre-wrap text-sm">
+                  {funStats.longestSpeech?.content}
+                </pre>
+              </DialogContent>
+            </Dialog>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>⚡ Kortaste anförandet</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center space-y-2">
-                  <div className="text-2xl font-bold text-orange-600">
-                    {funStats.shortestSpeech?.speaker || 'N/A'}
-                  </div>
-                  {funStats.shortestSpeech?.party && (
-                    <Badge className={`${getPartyColor(funStats.shortestSpeech.party)} text-white`}>
-                      {funStats.shortestSpeech.party}
-                    </Badge>
-                  )}
-                  <div className="text-sm text-gray-600">
-                    {funStats.shortestSpeech?.wordCount || 0} ord
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer">
+                  <CardHeader>
+                    <CardTitle>⚡ Kortaste anförandet</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-orange-600">
+                        {funStats.shortestSpeech?.speaker || 'N/A'}
+                      </div>
+                      {funStats.shortestSpeech?.party && (
+                        <Badge className={`${getPartyColor(funStats.shortestSpeech.party)} text-white`}>
+                          {funStats.shortestSpeech.party}
+                        </Badge>
+                      )}
+                      <div className="text-sm text-gray-600">
+                        {funStats.shortestSpeech?.wordCount || 0} ord
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{funStats.shortestSpeech?.speaker}</DialogTitle>
+                </DialogHeader>
+                <pre className="whitespace-pre-wrap text-sm">
+                  {funStats.shortestSpeech?.content}
+                </pre>
+              </DialogContent>
+            </Dialog>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>🧠 Mest komplexa anförandet</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center space-y-2">
-                  <div className="text-2xl font-bold text-indigo-600">
-                    {funStats.mostComplex?.speaker || 'N/A'}
-                  </div>
-                  {funStats.mostComplex?.party && (
-                    <Badge className={`${getPartyColor(funStats.mostComplex.party)} text-white`}>
-                      {funStats.mostComplex.party}
-                    </Badge>
-                  )}
-                  <div className="text-sm text-gray-600">
-                    LIX: {funStats.mostComplex?.scores?.lix || 0}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer">
+                  <CardHeader>
+                    <CardTitle>🧠 Mest komplexa anförandet</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-indigo-600">
+                        {funStats.mostComplex?.speaker || 'N/A'}
+                      </div>
+                      {funStats.mostComplex?.party && (
+                        <Badge className={`${getPartyColor(funStats.mostComplex.party)} text-white`}>
+                          {funStats.mostComplex.party}
+                        </Badge>
+                      )}
+                      <div className="text-sm text-gray-600">
+                        LIX: {funStats.mostComplex?.scores?.lix || 0}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{funStats.mostComplex?.speaker}</DialogTitle>
+                </DialogHeader>
+                <pre className="whitespace-pre-wrap text-sm">
+                  {funStats.mostComplex?.content}
+                </pre>
+              </DialogContent>
+            </Dialog>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>🎨 Mest varierade vokabulär</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center space-y-2">
-                  <div className="text-2xl font-bold text-teal-600">
-                    {funStats.mostVaried?.speaker || 'N/A'}
-                  </div>
-                  {funStats.mostVaried?.party && (
-                    <Badge className={`${getPartyColor(funStats.mostVaried.party)} text-white`}>
-                      {funStats.mostVaried.party}
-                    </Badge>
-                  )}
-                  <div className="text-sm text-gray-600">
-                    OVIX: {funStats.mostVaried?.scores?.ovix || 0}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer">
+                  <CardHeader>
+                    <CardTitle>🎨 Mest varierade vokabulär</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-teal-600">
+                        {funStats.mostVaried?.speaker || 'N/A'}
+                      </div>
+                      {funStats.mostVaried?.party && (
+                        <Badge className={`${getPartyColor(funStats.mostVaried.party)} text-white`}>
+                          {funStats.mostVaried.party}
+                        </Badge>
+                      )}
+                      <div className="text-sm text-gray-600">
+                        OVIX: {funStats.mostVaried?.scores?.ovix || 0}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{funStats.mostVaried?.speaker}</DialogTitle>
+                </DialogHeader>
+                <pre className="whitespace-pre-wrap text-sm">
+                  {funStats.mostVaried?.content}
+                </pre>
+              </DialogContent>
+            </Dialog>
           </div>
         </TabsContent>
 
@@ -351,13 +464,25 @@ const TopLists = ({ analyses }: TopListsProps) => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Input 
+                <Input
                   placeholder="Skriv ett ord för att söka..."
                   className="text-lg"
+                  value={searchWord}
+                  onChange={(e) => setSearchWord(e.target.value)}
                 />
-                <Button className="w-full">
+                <Button className="w-full" onClick={handleWordSearch}>
                   Sök i alla anföranden
                 </Button>
+                {wordResults.length > 0 && (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {wordResults.map((res) => (
+                      <div key={res.analysis.id} className="flex justify-between p-2 border rounded">
+                        <span>{res.analysis.speaker || res.analysis.fileName}</span>
+                        <Badge className="bg-blue-100 text-blue-800">{res.count}</Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <div className="text-sm text-gray-500 text-center">
                   Funktionen kommer att visa alla anföranden som innehåller sökordet,<br />
                   sorterat efter antal förekomster.

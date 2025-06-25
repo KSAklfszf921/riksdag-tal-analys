@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Home, Crown, BookOpen, Calculator } from 'lucide-react';
+import { Home, Crown, BookOpen, Calculator, Users } from 'lucide-react';
 
 interface NavigationProps {
   currentView: string;
@@ -13,6 +13,7 @@ const Navigation = ({ currentView, setCurrentView }: NavigationProps) => {
   const navItems = [
     { id: 'dashboard', label: 'Hem', icon: Home },
     { id: 'toplists', label: 'Topplistor', icon: Crown },
+    { id: 'compare', label: 'Jämförelser', icon: Users },
     { id: 'methods', label: 'Mätmetoder', icon: BookOpen },
     { id: 'calculator', label: 'Beräkning', icon: Calculator },
   ];

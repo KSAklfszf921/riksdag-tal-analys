@@ -14,14 +14,16 @@ import { useToast } from '@/hooks/use-toast';
 import FileUpload from '@/components/FileUpload';
 import AnalysisResults from '@/components/AnalysisResults';
 import TopLists from '@/components/TopLists';
+import ComparisonTools from '@/components/ComparisonTools';
 import Methods from '@/components/Methods';
 import Calculator from '@/components/Calculator';
 import ApiIntegration from '@/components/ApiIntegration';
 import Navigation from '@/components/Navigation';
+import { Analysis } from '@/types';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState('dashboard');
-  const [analyses, setAnalyses] = useState([]);
+  const [analyses, setAnalyses] = useState<Analysis[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
@@ -34,9 +36,9 @@ const Index = () => {
     if (!stored) return;
 
     try {
-      const parsed = JSON.parse(stored);
+      const parsed: Analysis[] = JSON.parse(stored);
       // Convert date strings back to Date objects
-      const analysesWithDates = parsed.map((analysis: any) => ({
+      const analysesWithDates = parsed.map((analysis: Analysis) => ({
         ...analysis,
         date: new Date(analysis.date),
       }));
@@ -61,11 +63,21 @@ const Index = () => {
     }
   }, [analyses]);
 
-  const handleAnalysisComplete = (newAnalysis) => {
-    setAnalyses(prev => [newAnalysis, ...prev]);
-    toast({
-      title: "Analys slutförd",
-      description: `${newAnalysis.speaker} (${newAnalysis.party}) har analyserats`,
+  const handleAnalysisComplete = (newAnalysis: Analysis) => {
+    setAnalyses(prev => {
+      const exists = prev.some(a => a.id === newAnalysis.id || a.fileName === newAnalysis.fileName);
+      if (exists) {
+        toast({
+          title: "Dublett hoppad",
+          description: `${newAnalysis.fileName} har redan analyserats`,
+        });
+        return prev;
+      }
+      toast({
+        title: "Analys slutförd",
+        description: `${newAnalysis.speaker} (${newAnalysis.party}) har analyserats`,
+      });
+      return [newAnalysis, ...prev];
     });
   };
 
@@ -148,11 +160,13 @@ const Index = () => {
             )}
 
             {/* Recent Analyses */}
-            <AnalysisResults analyses={analyses.slice(0, 10)} />
+            <AnalysisResults analyses={analyses} />
           </div>
         );
       case 'toplists':
         return <TopLists analyses={analyses} />;
+      case 'compare':
+        return <ComparisonTools analyses={analyses} />;
       case 'methods':
         return <Methods />;
       case 'calculator':
