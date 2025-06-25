@@ -38,6 +38,7 @@ const Members = () => {
                 {m.tilltalsnamn} {m.efternamn}
               </CardTitle>
               <p className="text-sm text-gray-500">{m.parti}</p>
+              <p className="text-xs text-gray-500">Foto: Sveriges riksdag</p>
             </div>
           </CardHeader>
         </Card>
