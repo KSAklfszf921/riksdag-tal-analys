@@ -52,8 +52,7 @@ export const analyzeText = async (
       ovix: Math.round(ovix),
       nk: Math.round(nk)
     },
-    wordCount: words.length,
-    content: text
+
   };
 };
 
@@ -109,7 +108,14 @@ interface HeaderInfo {
 
 // Extract speaker and party from the beginning of a speech text.
 const extractSpeakerAndParty = (text: string): HeaderInfo | null => {
-
+  const firstLine = text.trim().split(/\n/)[0] || "";
+  // Example header: "Fru Talman (S)" or "Herr Talman (M)"
+  const match = firstLine.match(/^(?<speaker>[^()]+)\((?<party>[^)]+)\)/);
+  if (match && match.groups) {
+    return {
+      speaker: match.groups.speaker.trim(),
+      party: match.groups.party.trim().toUpperCase(),
+    };
   }
   return null;
 };

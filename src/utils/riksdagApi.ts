@@ -27,7 +27,6 @@ export interface SearchParams {
 }
 
 
-const BASE_URL = import.meta.env.DEV ? '/riksdag-api/anforandelista/' : HTTP_BASE;
 
 const buildQuery = (params: SearchParams): string => {
   const q = new URLSearchParams({ utformat: 'json', doktyp: 'anf' });
