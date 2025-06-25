@@ -13,6 +13,7 @@ const Navigation = ({ currentView, setCurrentView }: NavigationProps) => {
   const navItems = [
     { id: 'dashboard', label: 'Hem', icon: Home },
     { id: 'toplists', label: 'Topplistor', icon: Crown },
+    { id: 'compare', label: 'Jämförelser', icon: Users },
     { id: 'methods', label: 'Mätmetoder', icon: BookOpen },
     { id: 'calculator', label: 'Beräkning', icon: Calculator },
     { id: 'members', label: 'Ledamöter', icon: Users },

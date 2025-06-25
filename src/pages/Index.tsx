@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import FileUpload from '@/components/FileUpload';
 import AnalysisResults from '@/components/AnalysisResults';
 import TopLists from '@/components/TopLists';
+import ComparisonTools from '@/components/ComparisonTools';
 import Methods from '@/components/Methods';
 import Calculator from '@/components/Calculator';
 import ApiIntegration from '@/components/ApiIntegration';
@@ -63,11 +64,7 @@ const Index = () => {
     }
   }, [analyses]);
 
-  const handleAnalysisComplete = (newAnalysis: Analysis) => {
-    setAnalyses(prev => [newAnalysis, ...prev]);
-    toast({
-      title: "Analys slutförd",
-      description: `${newAnalysis.speaker} (${newAnalysis.party}) har analyserats`,
+
     });
   };
 
@@ -155,6 +152,8 @@ const Index = () => {
         );
       case 'toplists':
         return <TopLists analyses={analyses} />;
+      case 'compare':
+        return <ComparisonTools analyses={analyses} />;
       case 'methods':
         return <Methods />;
       case 'calculator':

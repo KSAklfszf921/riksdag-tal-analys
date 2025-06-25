@@ -180,25 +180,39 @@ const TopLists = ({ analyses }: TopListsProps) => {
               <CardContent>
                 <div className="space-y-3">
                   {topScorers.map((analysis, index) => (
-                    <div key={analysis.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold">
-                          {index + 1}
-                        </div>
-                        <div>
-                          <div className="font-medium">{analysis.speaker || 'Okänd'}</div>
-                          <div className="text-sm text-gray-500">{analysis.fileName}</div>
-                        </div>
-                        {analysis.party && (
-                          <Badge className={`${getPartyColor(analysis.party)} text-white`}>
-                            {analysis.party}
+                    <Dialog key={analysis.id}>
+                      <DialogTrigger asChild>
+                        <div
+                          className="flex items-center justify-between p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold">
+                              {index + 1}
+                            </div>
+                            <div>
+                              <div className="font-medium">{analysis.speaker || 'Okänd'}</div>
+                              <div className="text-sm text-gray-500">{analysis.fileName}</div>
+                            </div>
+                            {analysis.party && (
+                              <Badge className={`${getPartyColor(analysis.party)} text-white`}>
+                                {analysis.party}
+                              </Badge>
+                            )}
+                          </div>
+                          <Badge className="bg-green-100 text-green-800 text-lg font-bold">
+                            {analysis.totalScore}
                           </Badge>
-                        )}
-                      </div>
-                      <Badge className="bg-green-100 text-green-800 text-lg font-bold">
-                        {analysis.totalScore}
-                      </Badge>
-                    </div>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>{analysis.speaker}</DialogTitle>
+                        </DialogHeader>
+                        <pre className="whitespace-pre-wrap text-sm">
+                          {analysis.content}
+                        </pre>
+                      </DialogContent>
+                    </Dialog>
                   ))}
                 </div>
               </CardContent>
@@ -214,25 +228,39 @@ const TopLists = ({ analyses }: TopListsProps) => {
               <CardContent>
                 <div className="space-y-3">
                   {bottomScorers.map((analysis, index) => (
-                    <div key={analysis.id} className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gray-500 text-white rounded-full flex items-center justify-center font-bold">
-                          {index + 1}
-                        </div>
-                        <div>
-                          <div className="font-medium">{analysis.speaker || 'Okänd'}</div>
-                          <div className="text-sm text-gray-500">{analysis.fileName}</div>
-                        </div>
-                        {analysis.party && (
-                          <Badge className={`${getPartyColor(analysis.party)} text-white`}>
-                            {analysis.party}
+                    <Dialog key={analysis.id}>
+                      <DialogTrigger asChild>
+                        <div
+                          className="flex items-center justify-between p-3 bg-gradient-to-r from-red-50 to-pink-50 rounded-lg cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-gray-500 text-white rounded-full flex items-center justify-center font-bold">
+                              {index + 1}
+                            </div>
+                            <div>
+                              <div className="font-medium">{analysis.speaker || 'Okänd'}</div>
+                              <div className="text-sm text-gray-500">{analysis.fileName}</div>
+                            </div>
+                            {analysis.party && (
+                              <Badge className={`${getPartyColor(analysis.party)} text-white`}>
+                                {analysis.party}
+                              </Badge>
+                            )}
+                          </div>
+                          <Badge className="bg-red-100 text-red-800 text-lg font-bold">
+                            {analysis.totalScore}
                           </Badge>
-                        )}
-                      </div>
-                      <Badge className="bg-red-100 text-red-800 text-lg font-bold">
-                        {analysis.totalScore}
-                      </Badge>
-                    </div>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>{analysis.speaker}</DialogTitle>
+                        </DialogHeader>
+                        <pre className="whitespace-pre-wrap text-sm">
+                          {analysis.content}
+                        </pre>
+                      </DialogContent>
+                    </Dialog>
                   ))}
                 </div>
               </CardContent>
@@ -295,89 +323,137 @@ const TopLists = ({ analyses }: TopListsProps) => {
 
         <TabsContent value="fun" className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>📏 Längsta anförandet</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center space-y-2">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {funStats.longestSpeech?.speaker || 'N/A'}
-                  </div>
-                  {funStats.longestSpeech?.party && (
-                    <Badge className={`${getPartyColor(funStats.longestSpeech.party)} text-white`}>
-                      {funStats.longestSpeech.party}
-                    </Badge>
-                  )}
-                  <div className="text-sm text-gray-600">
-                    {funStats.longestSpeech?.wordCount || 0} ord
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer">
+                  <CardHeader>
+                    <CardTitle>📏 Längsta anförandet</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-purple-600">
+                        {funStats.longestSpeech?.speaker || 'N/A'}
+                      </div>
+                      {funStats.longestSpeech?.party && (
+                        <Badge className={`${getPartyColor(funStats.longestSpeech.party)} text-white`}>
+                          {funStats.longestSpeech.party}
+                        </Badge>
+                      )}
+                      <div className="text-sm text-gray-600">
+                        {funStats.longestSpeech?.wordCount || 0} ord
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{funStats.longestSpeech?.speaker}</DialogTitle>
+                </DialogHeader>
+                <pre className="whitespace-pre-wrap text-sm">
+                  {funStats.longestSpeech?.content}
+                </pre>
+              </DialogContent>
+            </Dialog>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>⚡ Kortaste anförandet</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center space-y-2">
-                  <div className="text-2xl font-bold text-orange-600">
-                    {funStats.shortestSpeech?.speaker || 'N/A'}
-                  </div>
-                  {funStats.shortestSpeech?.party && (
-                    <Badge className={`${getPartyColor(funStats.shortestSpeech.party)} text-white`}>
-                      {funStats.shortestSpeech.party}
-                    </Badge>
-                  )}
-                  <div className="text-sm text-gray-600">
-                    {funStats.shortestSpeech?.wordCount || 0} ord
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer">
+                  <CardHeader>
+                    <CardTitle>⚡ Kortaste anförandet</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-orange-600">
+                        {funStats.shortestSpeech?.speaker || 'N/A'}
+                      </div>
+                      {funStats.shortestSpeech?.party && (
+                        <Badge className={`${getPartyColor(funStats.shortestSpeech.party)} text-white`}>
+                          {funStats.shortestSpeech.party}
+                        </Badge>
+                      )}
+                      <div className="text-sm text-gray-600">
+                        {funStats.shortestSpeech?.wordCount || 0} ord
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{funStats.shortestSpeech?.speaker}</DialogTitle>
+                </DialogHeader>
+                <pre className="whitespace-pre-wrap text-sm">
+                  {funStats.shortestSpeech?.content}
+                </pre>
+              </DialogContent>
+            </Dialog>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>🧠 Mest komplexa anförandet</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center space-y-2">
-                  <div className="text-2xl font-bold text-indigo-600">
-                    {funStats.mostComplex?.speaker || 'N/A'}
-                  </div>
-                  {funStats.mostComplex?.party && (
-                    <Badge className={`${getPartyColor(funStats.mostComplex.party)} text-white`}>
-                      {funStats.mostComplex.party}
-                    </Badge>
-                  )}
-                  <div className="text-sm text-gray-600">
-                    LIX: {funStats.mostComplex?.scores?.lix || 0}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer">
+                  <CardHeader>
+                    <CardTitle>🧠 Mest komplexa anförandet</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-indigo-600">
+                        {funStats.mostComplex?.speaker || 'N/A'}
+                      </div>
+                      {funStats.mostComplex?.party && (
+                        <Badge className={`${getPartyColor(funStats.mostComplex.party)} text-white`}>
+                          {funStats.mostComplex.party}
+                        </Badge>
+                      )}
+                      <div className="text-sm text-gray-600">
+                        LIX: {funStats.mostComplex?.scores?.lix || 0}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{funStats.mostComplex?.speaker}</DialogTitle>
+                </DialogHeader>
+                <pre className="whitespace-pre-wrap text-sm">
+                  {funStats.mostComplex?.content}
+                </pre>
+              </DialogContent>
+            </Dialog>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>🎨 Mest varierade vokabulär</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center space-y-2">
-                  <div className="text-2xl font-bold text-teal-600">
-                    {funStats.mostVaried?.speaker || 'N/A'}
-                  </div>
-                  {funStats.mostVaried?.party && (
-                    <Badge className={`${getPartyColor(funStats.mostVaried.party)} text-white`}>
-                      {funStats.mostVaried.party}
-                    </Badge>
-                  )}
-                  <div className="text-sm text-gray-600">
-                    OVIX: {funStats.mostVaried?.scores?.ovix || 0}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Card className="cursor-pointer">
+                  <CardHeader>
+                    <CardTitle>🎨 Mest varierade vokabulär</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center space-y-2">
+                      <div className="text-2xl font-bold text-teal-600">
+                        {funStats.mostVaried?.speaker || 'N/A'}
+                      </div>
+                      {funStats.mostVaried?.party && (
+                        <Badge className={`${getPartyColor(funStats.mostVaried.party)} text-white`}>
+                          {funStats.mostVaried.party}
+                        </Badge>
+                      )}
+                      <div className="text-sm text-gray-600">
+                        OVIX: {funStats.mostVaried?.scores?.ovix || 0}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{funStats.mostVaried?.speaker}</DialogTitle>
+                </DialogHeader>
+                <pre className="whitespace-pre-wrap text-sm">
+                  {funStats.mostVaried?.content}
+                </pre>
+              </DialogContent>
+            </Dialog>
           </div>
         </TabsContent>
 
