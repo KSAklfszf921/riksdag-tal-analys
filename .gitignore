@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Directory for CLI-downloaded speeches
+downloaded_speeches/
