@@ -9,13 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Search, Download, Calendar, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { fetchLatestSpeeches, searchSpeeches, ApiSearchParams } from '@/utils/riksdagApi';
+import { analyzeText } from '@/utils/textAnalyzer';
 
 interface ApiIntegrationProps {
   onAnalysisComplete: (analysis: any) => void;
 }
 
 const ApiIntegration = ({ onAnalysisComplete }: ApiIntegrationProps) => {
-  const [searchParams, setSearchParams] = useState({
+  const [searchParams, setSearchParams] = useState<ApiSearchParams>({
     year: '',
     party: '',
     member: '',
@@ -36,82 +38,109 @@ const ApiIntegration = ({ onAnalysisComplete }: ApiIntegrationProps) => {
     { value: 'MP', label: 'Miljöpartiet (MP)' }
   ];
 
-  const speechTypes = [
-    { value: 'anforande', label: 'Anföranden' },
-    { value: 'interpellation', label: 'Interpellationer' },
-    { value: 'fraga', label: 'Frågor' },
-    { value: 'motion', label: 'Motioner' }
-  ];
-
   const handleQuickFetch = async () => {
     setIsLoading(true);
     toast({
       title: "Hämtar anföranden",
-      description: "Hämtar de senaste 10 anförandena från Riksdagen...",
+      description: "Hämtar de senaste anförandena från Riksdagens API...",
     });
 
-    // Simulate API call - replace with actual Riksdag API integration
-    setTimeout(() => {
-      const mockSpeeches = [
-        {
-          id: 'api-1',
-          speaker: 'Ulf Kristersson',
-          party: 'M',
-          title: 'Regeringsförklaring',
-          date: '2024-01-15',
-          content: 'Herr talman! Sverige står inför stora utmaningar...'
-        },
-        {
-          id: 'api-2',
-          speaker: 'Magdalena Andersson',
-          party: 'S',
-          title: 'Ekonomisk politik',
-          date: '2024-01-14',
-          content: 'Herr talman! Den ekonomiska politiken måste...'
-        }
-      ];
+    try {
+      const speeches = await fetchLatestSpeeches(10);
+      
+      if (speeches.length === 0) {
+        toast({
+          title: "Inga anföranden hittades",
+          description: "API:et returnerade inga resultat",
+          variant: "destructive",
+        });
+        return;
+      }
 
-      mockSpeeches.forEach(speech => {
-        const mockAnalysis = {
-          id: speech.id,
-          fileName: `${speech.speaker}_${speech.date}.txt`,
-          speaker: speech.speaker,
-          party: speech.party,
-          date: new Date(speech.date),
-          totalScore: Math.floor(Math.random() * 40) + 40, // 40-80 range
-          scores: {
-            lix: Math.floor(Math.random() * 20) + 30,
-            ovix: Math.floor(Math.random() * 30) + 40,
-            nk: Math.floor(Math.random() * 15) + 10
-          },
+      // Analyze each speech
+      for (const speech of speeches) {
+        const fileName = `${speech.talare}_${speech.dok_datum}.txt`;
+        const analysis = await analyzeText(speech.anforande_text, fileName);
+        
+        // Update analysis with real data from API
+        const updatedAnalysis = {
+          ...analysis,
+          id: speech.anforande_id,
+          speaker: speech.talare,
+          party: speech.parti,
+          date: new Date(speech.dok_datum),
           source: 'riksdag-api'
         };
-        onAnalysisComplete(mockAnalysis);
-      });
+        
+        onAnalysisComplete(updatedAnalysis);
+      }
 
-      setIsLoading(false);
       toast({
         title: "Hämtning slutförd",
-        description: `${mockSpeeches.length} anföranden har hämtats och analyserats`,
+        description: `${speeches.length} anföranden har hämtats och analyserats`,
       });
-    }, 2000);
+    } catch (error) {
+      console.error('API fetch error:', error);
+      toast({
+        title: "Fel vid hämtning",
+        description: error instanceof Error ? error.message : "Ett okänt fel uppstod",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAdvancedSearch = async () => {
     setIsLoading(true);
-    // Implement advanced search with parameters
     toast({
       title: "Sökning pågår",
       description: "Söker anföranden enligt dina kriterier...",
     });
 
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const speeches = await searchSpeeches(searchParams);
+      
+      if (speeches.length === 0) {
+        toast({
+          title: "Sökning slutförd",
+          description: "Inga anföranden hittades för de valda kriterierna",
+        });
+        return;
+      }
+
+      // Analyze each speech
+      for (const speech of speeches) {
+        const fileName = `${speech.talare}_${speech.dok_datum}.txt`;
+        const analysis = await analyzeText(speech.anforande_text, fileName);
+        
+        // Update analysis with real data from API
+        const updatedAnalysis = {
+          ...analysis,
+          id: speech.anforande_id,
+          speaker: speech.talare,
+          party: speech.parti,
+          date: new Date(speech.dok_datum),
+          source: 'riksdag-api'
+        };
+        
+        onAnalysisComplete(updatedAnalysis);
+      }
+
       toast({
         title: "Sökning slutförd",
-        description: "Inga anföranden hittades för de valda kriterierna",
+        description: `${speeches.length} anföranden har hämtats och analyserats`,
       });
-    }, 1500);
+    } catch (error) {
+      console.error('API search error:', error);
+      toast({
+        title: "Fel vid sökning",
+        description: error instanceof Error ? error.message : "Ett okänt fel uppstod",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -199,22 +228,13 @@ const ApiIntegration = ({ onAnalysisComplete }: ApiIntegrationProps) => {
             </div>
 
             <div>
-              <Label>Anförandetyp</Label>
-              <Select 
-                value={searchParams.type} 
-                onValueChange={(value) => setSearchParams(prev => ({ ...prev, type: value }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Alla typer" />
-                </SelectTrigger>
-                <SelectContent>
-                  {speechTypes.map(type => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="searchTerm">Sökord</Label>
+              <Input
+                id="searchTerm"
+                placeholder="klimat, ekonomi, etc."
+                value={searchParams.searchTerm}
+                onChange={(e) => setSearchParams(prev => ({ ...prev, searchTerm: e.target.value }))}
+              />
             </div>
 
             <Button 
@@ -231,11 +251,11 @@ const ApiIntegration = ({ onAnalysisComplete }: ApiIntegrationProps) => {
       <div className="text-xs text-gray-500 text-center">
         <Badge variant="outline" className="mr-2">
           <Calendar className="h-3 w-3 mr-1" />
-          Riksmöte 2023/24
+          Data från 1993/94
         </Badge>
         <Badge variant="outline">
           <Users className="h-3 w-3 mr-1" />
-          349 ledamöter
+          Riksdagens API
         </Badge>
       </div>
     </div>
