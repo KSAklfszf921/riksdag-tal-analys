@@ -2,17 +2,24 @@
 import { Analysis } from '@/types';
 
 export const analyzeText = async (
-  text: string, 
-  fileName: string, 
+  text: string,
+  fileName: string,
   onProgress?: (progress: number) => void
 ): Promise<Analysis> => {
   // Simulate analysis progress
   if (onProgress) onProgress(25);
-  
-  // Extract speaker and party from filename or text
-  const speakerMatch = fileName.match(/^([^_]+)_([^_]+)/);
-  const speaker = speakerMatch ? `${speakerMatch[1]} ${speakerMatch[2]}` : 'Okänd talare';
-  const party = extractPartyFromText(text) || 'Okänt parti';
+
+  // Extract speaker and party from the speech text. Fallback to filename if not found.
+  const headerInfo = extractSpeakerAndParty(text);
+  let speaker = headerInfo?.speaker;
+  let party = headerInfo?.party;
+  if (!speaker) {
+    const speakerMatch = fileName.match(/^([^_]+)_([^_]+)/);
+    speaker = speakerMatch ? `${speakerMatch[1]} ${speakerMatch[2]}` : 'Okänd talare';
+  }
+  if (!party) {
+    party = extractPartyFromText(text) || 'Okänt parti';
+  }
   
   if (onProgress) onProgress(50);
   
@@ -90,3 +97,24 @@ const extractPartyFromText = (text: string): string | null => {
   const match = text.match(partyPattern);
   return match ? match[1].toUpperCase() : null;
 };
+
+interface HeaderInfo {
+  speaker: string | null;
+  party: string | null;
+}
+
+// Extract speaker and party from the beginning of a speech text.
+const extractSpeakerAndParty = (text: string): HeaderInfo | null => {
+  const headerMatch = text
+    .trimStart()
+    .match(/Anf\.\s*\d+\s+([^\n(]+?)\s*\(([^)]+)\)/i);
+  if (headerMatch) {
+    return {
+      speaker: headerMatch[1].trim(),
+      party: headerMatch[2].trim().toUpperCase(),
+    };
+  }
+  return null;
+};
+
+export {};
