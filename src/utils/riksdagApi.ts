@@ -27,6 +27,7 @@ export interface SearchParams {
 }
 
 
+
 const buildQuery = (params: SearchParams): string => {
   const q = new URLSearchParams({ utformat: 'json', doktyp: 'anf' });
 
