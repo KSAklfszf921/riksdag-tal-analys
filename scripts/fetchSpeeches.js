@@ -4,6 +4,12 @@ import process from 'node:process';
 
 const BASE_URL = 'https://data.riksdagen.se/anforandelista/';
 
+function sanitize(value) {
+  return value
+    .replace(/[\\/:*?"<>|]/g, '_')
+    .replace(/\s+/g, '_');
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
   const params = {};
@@ -53,7 +59,7 @@ async function fetchSpeeches(params) {
     const outDir = path.resolve('downloaded_speeches');
     await fs.mkdir(outDir, { recursive: true });
     for (const speech of speeches) {
-      const fileName = `${speech.talare.replace(/\s+/g, '_')}_${speech.dok_datum}.txt`;
+      const fileName = `${sanitize(speech.talare)}_${sanitize(speech.dok_datum)}.txt`;
       const filePath = path.join(outDir, fileName);
       await fs.writeFile(filePath, speech.anforande_text, 'utf8');
       console.log('Saved', filePath);
