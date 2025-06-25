@@ -5,9 +5,10 @@ import { Download, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { fetchLatestSpeeches } from '@/utils/riksdagApi';
 import { analyzeText } from '@/utils/textAnalyzer';
+import { Analysis } from '@/types';
 
 interface QuickFetchButtonProps {
-  onAnalysisComplete: (analysis: any) => void;
+  onAnalysisComplete: (analysis: Analysis) => void;
 }
 
 const QuickFetchButton = ({ onAnalysisComplete }: QuickFetchButtonProps) => {
@@ -37,7 +38,7 @@ const QuickFetchButton = ({ onAnalysisComplete }: QuickFetchButtonProps) => {
       for (const speech of speeches) {
         const fileName = `${speech.talare}_${speech.dok_datum}.txt`;
         const analysis = await analyzeText(speech.anforande_text, fileName);
-        
+
         // Update analysis with real data from API
         const updatedAnalysis = {
           ...analysis,
@@ -45,7 +46,8 @@ const QuickFetchButton = ({ onAnalysisComplete }: QuickFetchButtonProps) => {
           speaker: speech.talare,
           party: speech.parti,
           date: new Date(speech.dok_datum),
-          source: 'riksdag-api'
+          source: 'riksdag-api',
+          content: speech.anforande_text
         };
         
         onAnalysisComplete(updatedAnalysis);

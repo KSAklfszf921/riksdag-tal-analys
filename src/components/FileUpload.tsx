@@ -7,9 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Upload, FileText, X, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeText } from '@/utils/textAnalyzer';
+import { Analysis } from '@/types';
 
 interface FileUploadProps {
-  onAnalysisComplete: (analysis: any) => void;
+  onAnalysisComplete: (analysis: Analysis) => void;
   setIsProcessing: (processing: boolean) => void;
   setProgress: (progress: number) => void;
 }
@@ -42,6 +43,7 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
       const droppedFiles = Array.from(e.dataTransfer.files).filter(isTextFile);
 
       if (droppedFiles.length > 0) {
+        setFiles(prev => [...prev, ...droppedFiles]);
 
         toast({
           title: "Filer tillagda",
@@ -68,6 +70,8 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
       });
       return;
     }
+
+    setFiles(prev => [...prev, ...selectedFiles]);
 
   };
 
@@ -185,11 +189,11 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
                 </div>
               ))}
             </div>
-            <Button 
+            <Button
               onClick={analyzeFiles}
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
-              Analysera {files.length} fil(er)
+              Starta analys
             </Button>
           </CardContent>
         </Card>
