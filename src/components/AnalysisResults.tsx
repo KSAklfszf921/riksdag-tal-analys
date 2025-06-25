@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
-import { FileText, Download, Eye, BarChart3, Calendar, User, BookOpen } from 'lucide-react';
+
 import { Analysis } from '@/types';
 
 interface AnalysisResultsProps {
@@ -15,7 +15,7 @@ interface AnalysisResultsProps {
 
 const AnalysisResults = ({ analyses }: AnalysisResultsProps) => {
   const [selectedAnalysis, setSelectedAnalysis] = useState<Analysis | null>(null);
-  const [overviewAnalysis, setOverviewAnalysis] = useState<Analysis | null>(null);
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
