@@ -109,15 +109,7 @@ interface HeaderInfo {
 
 // Extract speaker and party from the beginning of a speech text.
 const extractSpeakerAndParty = (text: string): HeaderInfo | null => {
-  const firstLine = text.trimStart().split(/\n/)[0];
-  const match = firstLine.match(/Anf\.\s*\d+\s+([^()]+?)(?:\s+\(([^)]+)\))?$/i);
-  if (match) {
-    const speakerRaw = match[1].trim();
-    const speaker = speakerRaw
-      .replace(/^(statsrådet|minister|talmanen|herr|fru)\s+/i, '')
-      .replace(/\s+$/,'');
-    const party = match[2] ? match[2].trim().toUpperCase() : null;
-    return { speaker, party };
+
   }
   return null;
 };

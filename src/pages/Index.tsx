@@ -63,21 +63,7 @@ const Index = () => {
     }
   }, [analyses]);
 
-  const handleAnalysisComplete = (newAnalysis: Analysis) => {
-    setAnalyses(prev => {
-      const exists = prev.some(a => a.id === newAnalysis.id || a.fileName === newAnalysis.fileName);
-      if (exists) {
-        toast({
-          title: "Dublett hoppad",
-          description: `${newAnalysis.fileName} har redan analyserats`,
-        });
-        return prev;
-      }
-      toast({
-        title: "Analys slutförd",
-        description: `${newAnalysis.speaker} (${newAnalysis.party}) har analyserats`,
-      });
-      return [newAnalysis, ...prev];
+
     });
   };
 
