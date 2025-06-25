@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
-import { FileText, Download, Eye, BarChart3, Calendar, User } from 'lucide-react';
+
 import { Analysis } from '@/types';
 
 interface AnalysisResultsProps {
@@ -15,6 +15,7 @@ interface AnalysisResultsProps {
 
 const AnalysisResults = ({ analyses }: AnalysisResultsProps) => {
   const [selectedAnalysis, setSelectedAnalysis] = useState<Analysis | null>(null);
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -152,23 +153,46 @@ const AnalysisResults = ({ analyses }: AnalysisResultsProps) => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => setSelectedAnalysis(analysis)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle>Detaljerad analys - {analysis.fileName}</DialogTitle>
-                          <DialogDescription>
-                            Fullständig språkanalys med alla mätmetoder
-                          </DialogDescription>
-                        </DialogHeader>
+                    <div className="flex gap-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setOverviewAnalysis(analysis)}
+                          >
+                            <BookOpen className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Överblick - {analysis.fileName}</DialogTitle>
+                            <DialogDescription>Hela anförandet</DialogDescription>
+                          </DialogHeader>
+                          {overviewAnalysis?.content && (
+                            <pre className="whitespace-pre-wrap text-sm">
+                              {overviewAnalysis.content}
+                            </pre>
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedAnalysis(analysis)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Detaljerad analys - {analysis.fileName}</DialogTitle>
+                            <DialogDescription>
+                              Fullständig språkanalys med alla mätmetoder
+                            </DialogDescription>
+                          </DialogHeader>
                         {selectedAnalysis && (
                           <div className="space-y-6">
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -195,38 +219,42 @@ const AnalysisResults = ({ analyses }: AnalysisResultsProps) => {
                             {selectedAnalysis.scores && (
                               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <Card>
-                                  <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm">LIX (Läsbarhet)</CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <div className="text-2xl font-bold">{selectedAnalysis.scores.lix}</div>
-                                    <Progress value={(selectedAnalysis.scores.lix / 80) * 100} className="mt-2" />
-                                  </CardContent>
-                                </Card>
-                                <Card>
-                                  <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm">OVIX (Ordvariation)</CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <div className="text-2xl font-bold">{selectedAnalysis.scores.ovix}</div>
-                                    <Progress value={selectedAnalysis.scores.ovix} className="mt-2" />
-                                  </CardContent>
-                                </Card>
-                                <Card>
-                                  <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm">NK (Nominalkvot)</CardTitle>
-                                  </CardHeader>
-                                  <CardContent>
-                                    <div className="text-2xl font-bold">{selectedAnalysis.scores.nk}</div>
-                                    <Progress value={(selectedAnalysis.scores.nk / 30) * 100} className="mt-2" />
-                                  </CardContent>
-                                </Card>
+                                <CardHeader className="pb-3">
+                                  <CardTitle className="text-sm">LIX (Läsbarhet)</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="text-2xl font-bold">{selectedAnalysis.scores.lix}</div>
+                                  <Progress value={(selectedAnalysis.scores.lix / 80) * 100} className="mt-2" />
+                                  <div className="text-sm mt-2">Betyg {getScoreGrade(selectedAnalysis.scores.lix)}</div>
+                                </CardContent>
+                              </Card>
+                              <Card>
+                                <CardHeader className="pb-3">
+                                  <CardTitle className="text-sm">OVIX (Ordvariation)</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="text-2xl font-bold">{selectedAnalysis.scores.ovix}</div>
+                                  <Progress value={selectedAnalysis.scores.ovix} className="mt-2" />
+                                  <div className="text-sm mt-2">Betyg {getScoreGrade(selectedAnalysis.scores.ovix)}</div>
+                                </CardContent>
+                              </Card>
+                              <Card>
+                                <CardHeader className="pb-3">
+                                  <CardTitle className="text-sm">NK (Nominalkvot)</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="text-2xl font-bold">{selectedAnalysis.scores.nk}</div>
+                                  <Progress value={(selectedAnalysis.scores.nk / 30) * 100} className="mt-2" />
+                                  <div className="text-sm mt-2">Betyg {getScoreGrade(selectedAnalysis.scores.nk)}</div>
+                                </CardContent>
+                              </Card>
                               </div>
                             )}
                           </div>
                         )}
-                      </DialogContent>
-                    </Dialog>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

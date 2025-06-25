@@ -149,7 +149,7 @@ const Index = () => {
             )}
 
             {/* Recent Analyses */}
-            <AnalysisResults analyses={analyses.slice(0, 10)} />
+            <AnalysisResults analyses={analyses} />
           </div>
         );
       case 'toplists':

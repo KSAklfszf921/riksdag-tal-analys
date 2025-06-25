@@ -23,6 +23,8 @@ export const analyzeText = async (
   
   if (onProgress) onProgress(50);
   
+  const words = text.split(/\s+/).filter(w => w.length > 0);
+
   // Calculate LIX (readability index)
   const lix = calculateLIX(text);
   
@@ -37,7 +39,7 @@ export const analyzeText = async (
   if (onProgress) onProgress(100);
   
   const totalScore = Math.round((lix + ovix + nk) / 3);
-  
+
   return {
     id: `analysis-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     fileName,
@@ -49,7 +51,9 @@ export const analyzeText = async (
       lix: Math.round(lix),
       ovix: Math.round(ovix),
       nk: Math.round(nk)
-    }
+    },
+    wordCount: words.length,
+    content: text
   };
 };
 
@@ -105,14 +109,7 @@ interface HeaderInfo {
 
 // Extract speaker and party from the beginning of a speech text.
 const extractSpeakerAndParty = (text: string): HeaderInfo | null => {
-  const headerMatch = text
-    .trimStart()
-    .match(/Anf\.\s*\d+\s+([^\n(]+?)\s*\(([^)]+)\)/i);
-  if (headerMatch) {
-    return {
-      speaker: headerMatch[1].trim(),
-      party: headerMatch[2].trim().toUpperCase(),
-    };
+
   }
   return null;
 };

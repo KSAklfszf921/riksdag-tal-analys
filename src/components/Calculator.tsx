@@ -5,6 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Calculator as CalcIcon, TrendingUp, Award, BarChart3 } from 'lucide-react';
 
+interface ScoreRange {
+  min: number;
+  max: number;
+  percentage: number;
+  color: string;
+}
+
 const Calculator = () => {
   const scoringSystem = {
     weights: {
@@ -20,7 +27,7 @@ const Calculator = () => {
       medium: { min: 40, max: 59, percentage: 50, color: 'bg-yellow-100 text-yellow-700' },
       low: { min: 20, max: 39, percentage: 15, color: 'bg-orange-100 text-orange-700' },
       veryLow: { min: 0, max: 19, percentage: 0.1, color: 'bg-red-100 text-red-700' }
-    }
+    } as Record<string, ScoreRange>
   };
 
   const methodWeights = [
@@ -150,7 +157,7 @@ const Calculator = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {Object.entries(scoringSystem.distribution).map(([key, range]: [string, any]) => (
+              {Object.entries(scoringSystem.distribution).map(([key, range]: [string, ScoreRange]) => (
                 <div key={key} className="space-y-2">
                   <div className="flex justify-between items-center">
                     <Badge className={range.color}>
