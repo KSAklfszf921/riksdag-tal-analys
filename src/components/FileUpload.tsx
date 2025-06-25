@@ -43,6 +43,7 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
       const droppedFiles = Array.from(e.dataTransfer.files).filter(isTextFile);
 
       if (droppedFiles.length > 0) {
+        setFiles(prev => [...prev, ...droppedFiles]);
 
         toast({
           title: "Filer tillagda",
@@ -69,6 +70,8 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
       });
       return;
     }
+
+    setFiles(prev => [...prev, ...selectedFiles]);
 
   };
 
@@ -186,11 +189,11 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
                 </div>
               ))}
             </div>
-            <Button 
+            <Button
               onClick={analyzeFiles}
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
-              Analysera {files.length} fil(er)
+              Starta analys
             </Button>
           </CardContent>
         </Card>
