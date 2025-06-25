@@ -32,14 +32,6 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
   const isTextFile = (file: File) =>
     file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt");
 
-  const addFiles = (newFiles: File[]) => {
-    setFiles((prev) => {
-      const unique = newFiles.filter(
-        (f) => !prev.some((p) => p.name === f.name && p.size === f.size)
-      );
-      return [...prev, ...unique];
-    });
-  };
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -50,7 +42,7 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
       const droppedFiles = Array.from(e.dataTransfer.files).filter(isTextFile);
 
       if (droppedFiles.length > 0) {
-        addFiles(droppedFiles);
+
         toast({
           title: "Filer tillagda",
           description: `${droppedFiles.length} fil(er) redo för analys`,
@@ -76,7 +68,7 @@ const FileUpload = ({ onAnalysisComplete, setIsProcessing, setProgress }: FileUp
       });
       return;
     }
-    addFiles(selectedFiles);
+
   };
 
   const removeFile = (index: number) => {

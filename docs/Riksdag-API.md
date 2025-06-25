@@ -5,10 +5,6 @@ This project fetches speeches from the Riksdagens open data API. Below is a shor
 ## Base URL
 
 ```
-https://data.riksdagen.se/anforandelista/
-```
-
-During development a Vite proxy forwards requests to this origin to avoid CORS issues. In production the same HTTPS endpoint is used directly.
 
 ## Common Parameters
 
@@ -30,16 +26,10 @@ During development a Vite proxy forwards requests to this origin to avoid CORS i
 Fetch the latest 20 speeches in JSON format:
 
 ```
-https://data.riksdagen.se/anforandelista/?sz=20&utformat=json
+
 ```
 
 The response contains an `anforandelista` object with an array of `anforande` items. Each item includes fields such as `anforande_id`, `talare`, `parti`, `dok_datum`, `anforande_text` and `rm`.
 
-Refer to [Riksdagens dokumentation](https://data.riksdagen.se/dokumentation/) for full details about available endpoints and parameters.
 
-## CLI tool
-
-Run `npm run fetch:speeches` to download speeches from the command line. You can pass optional parameters such as `--year 2024/25` or `--party S`.
-
-The speeches are saved as `.txt` files under `downloaded_speeches/`.
 
