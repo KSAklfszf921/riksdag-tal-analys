@@ -30,7 +30,11 @@ const Members = () => {
         <Card key={m.id}>
           <CardHeader className="flex items-center gap-3">
             <Avatar>
-              <AvatarImage src={m.bild_url} alt={m.tilltalsnamn} referrerPolicy="no-referrer" />
+              <AvatarImage
+                src={m.bild_url}
+                alt={`Foto på ${m.tilltalsnamn} ${m.efternamn}`}
+                referrerPolicy="no-referrer"
+              />
               <AvatarFallback>{m.tilltalsnamn[0]}{m.efternamn[0]}</AvatarFallback>
             </Avatar>
             <div>
@@ -38,6 +42,7 @@ const Members = () => {
                 {m.tilltalsnamn} {m.efternamn}
               </CardTitle>
               <p className="text-sm text-gray-500">{m.parti}</p>
+              <p className="text-xs text-gray-400">Foto: Sveriges riksdag</p>
             </div>
           </CardHeader>
         </Card>
