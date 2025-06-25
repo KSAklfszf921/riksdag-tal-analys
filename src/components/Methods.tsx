@@ -288,6 +288,26 @@ const Methods = () => {
         ))}
       </Tabs>
 
+      <Card>
+        <CardHeader>
+          <CardTitle>Exempel på repetition</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h4 className="font-semibold text-red-600 mb-1">Repetitiv text</h4>
+            <p className="text-sm text-gray-700">
+              "Herr talman! Vi kräver förändring, vi kräver ansvar, vi kräver handling. Vi kräver att regeringen agerar nu!"
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold text-green-600 mb-1">Icke repetitiv text</h4>
+            <p className="text-sm text-gray-700">
+              "Herr talman! Regeringen måste ta ansvar för landets ekonomi genom att genomföra nödvändiga reformer."
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card className="bg-gradient-to-r from-gray-50 to-slate-50">
         <CardHeader>
           <CardTitle>ℹ️ Viktinformation</CardTitle>
