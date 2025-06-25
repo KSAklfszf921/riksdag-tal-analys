@@ -18,10 +18,11 @@ import Methods from '@/components/Methods';
 import Calculator from '@/components/Calculator';
 import ApiIntegration from '@/components/ApiIntegration';
 import Navigation from '@/components/Navigation';
+import { Analysis } from '@/types';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState('dashboard');
-  const [analyses, setAnalyses] = useState([]);
+  const [analyses, setAnalyses] = useState<Analysis[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
@@ -34,9 +35,9 @@ const Index = () => {
     if (!stored) return;
 
     try {
-      const parsed = JSON.parse(stored);
+      const parsed: Analysis[] = JSON.parse(stored);
       // Convert date strings back to Date objects
-      const analysesWithDates = parsed.map((analysis: any) => ({
+      const analysesWithDates = parsed.map((analysis: Analysis) => ({
         ...analysis,
         date: new Date(analysis.date),
       }));
@@ -61,7 +62,7 @@ const Index = () => {
     }
   }, [analyses]);
 
-  const handleAnalysisComplete = (newAnalysis) => {
+  const handleAnalysisComplete = (newAnalysis: Analysis) => {
     setAnalyses(prev => [newAnalysis, ...prev]);
     toast({
       title: "Analys slutförd",

@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Crown, TrendingUp, TrendingDown, Search, Filter, User, BarChart3 } from 'lucide-react';
+import { Analysis } from '@/types';
 
 interface TopListsProps {
-  analyses: any[];
+  analyses: Analysis[];
 }
 
 const TopLists = ({ analyses }: TopListsProps) => {
@@ -57,7 +58,7 @@ const TopLists = ({ analyses }: TopListsProps) => {
     return acc;
   }, {});
 
-  const partyStats = Object.entries(partyAverages).map(([party, data]: [string, any]) => ({
+  const partyStats = Object.entries(partyAverages).map(([party, data]: [string, { total: number; count: number; scores: number[] }]) => ({
     party,
     average: Math.round(data.total / data.count),
     count: data.count,

@@ -7,20 +7,20 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { searchSpeeches, ApiSearchParams } from '@/utils/riksdagApi';
+import { searchSpeeches, SearchParams } from '@/utils/riksdagApi';
 import { analyzeText } from '@/utils/textAnalyzer';
+import { Analysis } from '@/types';
 
 interface AdvancedSearchDialogProps {
-  onAnalysisComplete: (analysis: any) => void;
+  onAnalysisComplete: (analysis: Analysis) => void;
 }
 
 const AdvancedSearchDialog = ({ onAnalysisComplete }: AdvancedSearchDialogProps) => {
-  const [searchParams, setSearchParams] = useState<ApiSearchParams>({
+  const [searchParams, setSearchParams] = useState<SearchParams>({
     year: '',
     party: '',
     member: '',
-    type: '',
-    limit: '10'
+    limit: 10
   });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -116,9 +116,9 @@ const AdvancedSearchDialog = ({ onAnalysisComplete }: AdvancedSearchDialogProps)
             </div>
             <div>
               <Label htmlFor="limit">Antal resultat</Label>
-              <Select 
-                value={searchParams.limit} 
-                onValueChange={(value) => setSearchParams(prev => ({ ...prev, limit: value }))}
+              <Select
+                value={String(searchParams.limit)}
+                onValueChange={(value) => setSearchParams(prev => ({ ...prev, limit: parseInt(value, 10) }))}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -167,8 +167,8 @@ const AdvancedSearchDialog = ({ onAnalysisComplete }: AdvancedSearchDialogProps)
             <Input
               id="searchTerm"
               placeholder="klimat, ekonomi, etc."
-              value={searchParams.searchTerm}
-              onChange={(e) => setSearchParams(prev => ({ ...prev, searchTerm: e.target.value }))}
+              value={searchParams.search || ''}
+              onChange={(e) => setSearchParams(prev => ({ ...prev, search: e.target.value }))}
             />
           </div>
 

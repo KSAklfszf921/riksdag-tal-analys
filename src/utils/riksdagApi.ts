@@ -1,5 +1,4 @@
-
-export interface RiksdagAnforande {
+export interface Speech {
   anforande_id: string;
   talare: string;
   parti: string;
@@ -9,100 +8,58 @@ export interface RiksdagAnforande {
   rm: string;
 }
 
-export interface RiksdagApiResponse {
+export interface ApiResponse {
   anforandelista: {
-    anforande: RiksdagAnforande[];
+    anforande: Speech[] | Speech;
     '@count': string;
     '@sida': string;
   };
 }
 
-export interface ApiSearchParams {
+export interface SearchParams {
+  limit?: number;
   year?: string;
   party?: string;
   member?: string;
-  type?: string;
-  limit?: string;
-  searchTerm?: string;
+  search?: string;
   from?: string;
-  tom?: string;
+  to?: string;
 }
 
-// Use a relative URL in development so we can proxy API requests to avoid CORS
-// issues. In production we call the HTTPS endpoint directly.
-const BASE_URL = import.meta.env.DEV
-  ? '/riksdag-api/anforandelista/'
-  : 'https://data.riksdagen.se/anforandelista/';
+const HTTP_BASE = 'http://data.riksdagen.se/anforandelista/';
+const BASE_URL = import.meta.env.DEV ? '/riksdag-api/anforandelista/' : HTTP_BASE;
 
-export const fetchRiksdagSpeeches = async (params: ApiSearchParams = {}): Promise<RiksdagAnforande[]> => {
-  const queryParams = new URLSearchParams();
-  
-  // Standard parameters
-  queryParams.append('utformat', 'json');
-  queryParams.append('doktyp', 'anf');
-  
-  // Add optional parameters
-  if (params.limit) {
-    queryParams.append('sz', params.limit);
-  } else {
-    queryParams.append('sz', '10'); // Default to 10
-  }
-  
-  if (params.year) {
-    queryParams.append('rm', params.year);
-  }
-  
-  if (params.party) {
-    queryParams.append('parti', params.party);
-  }
-  
-  if (params.member) {
-    queryParams.append('talare', params.member);
-  }
-  
-  if (params.searchTerm) {
-    queryParams.append('sokord', params.searchTerm);
-  }
-  
-  if (params.from) {
-    queryParams.append('from', params.from);
-  }
-  
-  if (params.tom) {
-    queryParams.append('tom', params.tom);
-  }
+const buildQuery = (params: SearchParams): string => {
+  const q = new URLSearchParams({ utformat: 'json', doktyp: 'anf' });
 
-  const url = `${BASE_URL}?${queryParams.toString()}`;
-  
-  console.log('Fetching from Riksdag API:', url);
-  
-  try {
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data: RiksdagApiResponse = await response.json();
-    
-    // Handle both single item and array responses
-    const speeches = Array.isArray(data.anforandelista.anforande) 
-      ? data.anforandelista.anforande 
-      : [data.anforandelista.anforande];
-    
-    console.log(`Fetched ${speeches.length} speeches from Riksdag API`);
-    
-    return speeches.filter(speech => speech && speech.anforande_text);
-  } catch (error) {
-    console.error('Error fetching from Riksdag API:', error);
-    throw new Error(`Failed to fetch speeches: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
+  if (params.limit) q.append('sz', params.limit.toString());
+  if (params.year) q.append('rm', params.year);
+  if (params.party) q.append('parti', params.party);
+  if (params.member) q.append('talare', params.member);
+  if (params.search) q.append('sokord', params.search);
+  if (params.from) q.append('from', params.from);
+  if (params.to) q.append('tom', params.to);
+
+  return `${BASE_URL}?${q.toString()}`;
 };
 
-export const fetchLatestSpeeches = async (count: number = 10): Promise<RiksdagAnforande[]> => {
-  return fetchRiksdagSpeeches({ limit: count.toString() });
+const fetchSpeeches = async (params: SearchParams = {}): Promise<Speech[]> => {
+  const url = buildQuery(params);
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Riksdag API error: ${response.status}`);
+  }
+
+  const data: ApiResponse = await response.json();
+  const list = data.anforandelista.anforande;
+  const speeches = Array.isArray(list) ? list : [list];
+  return speeches.filter((s) => s && s.anforande_text);
 };
 
-export const searchSpeeches = async (searchParams: ApiSearchParams): Promise<RiksdagAnforande[]> => {
-  return fetchRiksdagSpeeches(searchParams);
+export const fetchLatestSpeeches = async (count = 10): Promise<Speech[]> => {
+  return fetchSpeeches({ limit: count });
+};
+
+export const searchSpeeches = async (params: SearchParams): Promise<Speech[]> => {
+  return fetchSpeeches(params);
 };
